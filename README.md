@@ -32,6 +32,6 @@ Found a bug? Want a feature added? Please open an issue so we can talk about it.
 
 Pull requests are welcome. Please try to match the current code formatting.
 
-## Maintainer
+## Author
 
 [Tim Brugman](https://github.com/Brugman)
