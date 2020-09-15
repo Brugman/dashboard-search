@@ -1,4 +1,4 @@
-> Dashboard Search is a WordPress plugin that puts search on your dashboard for all your post types, and some other things.
+> Dashboard Search is a WordPress plugin that puts search on your dashboard for all your post types.
 
 ![screenshot](/screenshot.png)
 
@@ -34,4 +34,4 @@ Pull requests are welcome. Please try to match the current code formatting.
 
 ## Maintainer
 
-[Tim Brugman](https://timbr.dev/)
+[Tim Brugman](https://github.com/Brugman)
