@@ -10,6 +10,9 @@
  * Text Domain: tbds
  */
 
+if ( ! defined( 'ABSPATH' ) )
+    exit;
+
 function tbds_post_types()
 {
     $results = [];
