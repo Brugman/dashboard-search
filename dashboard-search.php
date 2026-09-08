@@ -98,8 +98,8 @@ add_action( 'wp_dashboard_setup', function () {
             if ( ! current_user_can( $post_type['cap'] ) )
                 continue;
 ?>
-<form action="<?=esc_url( $post_type['action_url'] );?>" method="get" role="form">
-    <div class="form-group">
+<form action="<?=esc_url( $post_type['action_url'] );?>" method="get">
+    <div>
 <?php if ( $post_type['name'] ): ?>
         <input type="hidden" name="post_type" value="<?=esc_attr( $post_type['name'] );?>">
 <?php endif; ?>
