@@ -10,7 +10,7 @@
  * Text Domain: tbds
  */
 
-if ( ! defined( 'ABSPATH' ) )
+if ( !defined( 'ABSPATH' ) )
     exit;
 
 function tbds_search_targets()
@@ -33,9 +33,7 @@ function tbds_search_targets()
             continue;
 
         foreach ( $taxonomy->object_type as $attached_post_type )
-        {
             $taxonomies_by_post_type[ $attached_post_type ][] = $taxonomy;
-        }
     }
 
     // add Post Types
@@ -67,13 +65,13 @@ function tbds_search_targets()
                     continue;
 
                 $search_targets[ $target_key ] = [
-                    'post_type'  => false,
+                    'post_type'    => false,
                     // translators: 1: post type singular name, 2: taxonomy name.
-                    'label'      => sprintf( __( '%1$s %2$s', 'tbds' ), $post_type->labels->singular_name, $taxonomy->label ),
-                    'action_url' => $admin_url.'edit-tags.php',
-                    'cap'        => $taxonomy->cap->manage_terms,
+                    'label'        => sprintf( __( '%1$s %2$s', 'tbds' ), $post_type->labels->singular_name, $taxonomy->label ),
+                    'action_url'   => $admin_url.'edit-tags.php',
+                    'cap'          => $taxonomy->cap->manage_terms,
                     'extra_params' => [
-                        'taxonomy' => $taxonomy->name,
+                        'taxonomy'  => $taxonomy->name,
                         'post_type' => $post_type->name,
                     ],
                 ];
@@ -82,13 +80,13 @@ function tbds_search_targets()
     }
 
     // add Gravity Forms
-    if ( class_exists( 'GFCommon' ) && ! isset( $search_targets['gform'] ) )
+    if ( class_exists( 'GFCommon' ) && !isset( $search_targets['gform'] ) )
     {
         $search_targets['gform'] = [
-            'post_type'  => false,
-            'label'      => __( 'Forms', 'tbds' ),
-            'action_url' => $admin_url.'admin.php',
-            'cap'        => 'gravityforms_edit_forms',
+            'post_type'    => false,
+            'label'        => __( 'Forms', 'tbds' ),
+            'action_url'   => $admin_url.'admin.php',
+            'cap'          => 'gravityforms_edit_forms',
             'extra_params' => [
                 'page' => 'gf_edit_forms',
             ]
@@ -108,7 +106,7 @@ function tbds_search_targets()
     $comments_enabled = get_option( 'default_comment_status' ) === 'open';
     $has_real_comments = $comment_counts->approved + $comment_counts->moderated > 1;
 
-    if ( ( $comments_enabled || $has_real_comments ) && ! isset( $search_targets['comments'] ) )
+    if ( ( $comments_enabled || $has_real_comments ) && !isset( $search_targets['comments'] ) )
     {
         $search_targets['comments'] = [
             'post_type'  => false,
@@ -119,7 +117,7 @@ function tbds_search_targets()
     }
 
     // add Plugins
-    if ( ! isset( $search_targets['plugins'] ) )
+    if ( !isset( $search_targets['plugins'] ) )
     {
         $search_targets['plugins'] = [
             'post_type'  => false,
@@ -138,7 +136,7 @@ function tbds_search_targets()
     ];
 
     // add Network Sites
-    if ( is_multisite() && ! isset( $search_targets['network_sites'] ) )
+    if ( is_multisite() && !isset( $search_targets['network_sites'] ) )
     {
         $search_targets['network_sites'] = [
             'post_type'  => false,
@@ -149,7 +147,7 @@ function tbds_search_targets()
     }
 
     // add Network Users
-    if ( is_multisite() && ! isset( $search_targets['network_user'] ) )
+    if ( is_multisite() && !isset( $search_targets['network_user'] ) )
     {
         $search_targets['network_user'] = [
             'post_type'  => 'network_user',
@@ -178,7 +176,7 @@ add_action( 'wp_dashboard_setup', function () {
 
         foreach ( tbds_search_targets() as $target )
         {
-            if ( ! current_user_can( $target['cap'] ) )
+            if ( !current_user_can( $target['cap'] ) )
                 continue;
 ?>
 <form action="<?=esc_url( $target['action_url'] );?>" method="get">
