@@ -33,7 +33,7 @@ function tbds_post_types()
     }
 
     // add Gravity Forms
-    if ( is_plugin_active( 'gravityforms/gravityforms.php' ) || is_plugin_active_for_network( 'gravityforms/gravityforms.php' ) )
+    if ( class_exists( 'GFCommon' ) )
     {
         $results['gform'] = [
             'name'       => false,
