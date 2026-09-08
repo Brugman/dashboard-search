@@ -91,6 +91,17 @@ function tbds_post_types()
         'cap'        => 'list_users',
     ];
 
+    // add Network Sites
+    if ( is_multisite() && ! isset( $results['network_sites'] ) )
+    {
+        $results['network_sites'] = [
+            'name'       => false,
+            'label'      => __( 'Network Sites', 'tbds' ),
+            'action_url' => network_admin_url().'sites.php',
+            'cap'        => 'manage_sites',
+        ];
+    }
+
     // add Network Users
     if ( is_multisite() && ! isset( $results['network_user'] ) )
     {
