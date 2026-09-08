@@ -72,6 +72,17 @@ function tbds_post_types()
         ];
     }
 
+    // add Plugins
+    if ( ! isset( $results['plugins'] ) )
+    {
+        $results['plugins'] = [
+            'name'       => false,
+            'label'      => __( 'Plugins', 'tbds' ),
+            'action_url' => $admin_url.'plugins.php',
+            'cap'        => 'activate_plugins',
+        ];
+    }
+
     // add Users
     $results['user'] = [
         'name'       => 'user',
