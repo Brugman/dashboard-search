@@ -36,7 +36,7 @@ function tbds_post_types()
     }
 
     // add Gravity Forms
-    if ( class_exists( 'GFCommon' ) )
+    if ( class_exists( 'GFCommon' ) && ! isset( $results['gform'] ) )
     {
         $results['gform'] = [
             'name'       => false,
@@ -66,7 +66,7 @@ function tbds_post_types()
     ];
 
     // add Network Users
-    if ( is_multisite() )
+    if ( is_multisite() && ! isset( $results['network_user'] ) )
     {
         $results['network_user'] = [
             'name'       => 'network_user',
