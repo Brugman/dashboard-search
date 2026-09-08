@@ -38,6 +38,48 @@ function tbds_post_types()
         ];
     }
 
+    // add Taxonomies
+    $taxonomies = get_taxonomies([
+        'show_ui' => true,
+    ], 'objects' );
+
+    foreach ( $taxonomies as $taxonomy )
+    {
+        // respect taxonomies that were deliberately hidden from the admin menu
+        if ( $taxonomy->show_in_menu === false )
+            continue;
+
+        // find the first visible post type this taxonomy is attached to
+        $taxonomy_object_type = '';
+
+        foreach ( $taxonomy->object_type as $object_type )
+        {
+            if ( isset( $results[ $object_type ] ) )
+            {
+                $taxonomy_object_type = $object_type;
+                break;
+            }
+        }
+
+        // skip taxonomies that are not attached to a visible post type
+        if ( $taxonomy_object_type === '' )
+            continue;
+
+        $post_type_object = get_post_type_object( $taxonomy_object_type );
+
+        $results[ 'taxonomy_'.$taxonomy->name ] = [
+            'name'       => false,
+            // translators: 1: post type singular name, 2: taxonomy name.
+            'label'      => sprintf( __( '%1$s %2$s', 'tbds' ), $post_type_object->labels->singular_name, $taxonomy->label ),
+            'action_url' => $admin_url.'edit-tags.php',
+            'cap'        => $taxonomy->cap->manage_terms,
+            'other_gets' => [
+                'taxonomy' => $taxonomy->name,
+                'post_type' => $taxonomy_object_type,
+            ],
+        ];
+    }
+
     // add Gravity Forms
     if ( class_exists( 'GFCommon' ) && ! isset( $results['gform'] ) )
     {
