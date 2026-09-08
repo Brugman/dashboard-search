@@ -57,6 +57,21 @@ function tbds_post_types()
         $results['attachment'] = $attachment;
     }
 
+    // add Comments
+    $comment_counts = wp_count_comments();
+    $comments_enabled = get_option( 'default_comment_status' ) === 'open';
+    $has_real_comments = $comment_counts->approved + $comment_counts->moderated > 1;
+
+    if ( ( $comments_enabled || $has_real_comments ) && ! isset( $results['comments'] ) )
+    {
+        $results['comments'] = [
+            'name'       => false,
+            'label'      => __( 'Comments', 'tbds' ),
+            'action_url' => $admin_url.'edit-comments.php',
+            'cap'        => 'edit_posts',
+        ];
+    }
+
     // add Users
     $results['user'] = [
         'name'       => 'user',
