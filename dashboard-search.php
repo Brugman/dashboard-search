@@ -37,7 +37,7 @@ function tbds_post_types()
     {
         $results['gform'] = [
             'name'       => false,
-            'label'      => __( 'Forms' ),
+            'label'      => __( 'Forms', 'tbds' ),
             'action_url' => $admin_url.'admin.php',
             'cap'        => 'gravityforms_edit_forms',
             'other_gets' => [
@@ -57,7 +57,7 @@ function tbds_post_types()
     // add Users
     $results['user'] = [
         'name'       => 'user',
-        'label'      => __( 'Users' ),
+        'label'      => __( 'Users', 'tbds' ),
         'action_url' => $admin_url.'users.php',
         'cap'        => 'list_users',
     ];
@@ -67,7 +67,7 @@ function tbds_post_types()
     {
         $results['network_user'] = [
             'name'       => 'network_user',
-            'label'      => __( 'Network Users' ),
+            'label'      => __( 'Network Users', 'tbds' ),
             'action_url' => network_admin_url().'users.php',
             'cap'        => 'manage_network_users',
         ];
@@ -76,8 +76,12 @@ function tbds_post_types()
     return $results;
 }
 
+add_action( 'init', function () {
+    load_plugin_textdomain( 'tbds' );
+});
+
 add_action( 'wp_dashboard_setup', function () {
-    wp_add_dashboard_widget( 'dashboard-search-boxes', 'Search', function ( $post, $callback_args ) {
+    wp_add_dashboard_widget( 'dashboard-search-boxes', esc_html__( 'Search', 'tbds' ), function ( $post, $callback_args ) {
 ?>
 <style>
 #dashboard-search-boxes.postbox .inside form + form { margin-top: 5px; }
@@ -91,17 +95,17 @@ add_action( 'wp_dashboard_setup', function () {
             if ( ! current_user_can( $post_type['cap'] ) )
                 continue;
 ?>
-<form action="<?=$post_type['action_url'];?>" method="get" role="form">
+<form action="<?=esc_url( $post_type['action_url'] );?>" method="get" role="form">
     <div class="form-group">
 <?php if ( $post_type['name'] ): ?>
-        <input type="hidden" name="post_type" value="<?=$post_type['name'];?>">
+        <input type="hidden" name="post_type" value="<?=esc_attr( $post_type['name'] );?>">
 <?php endif; ?>
 <?php if ( isset( $post_type['other_gets'] ) ): ?>
 <?php foreach ( $post_type['other_gets'] as $k => $v ): ?>
-        <input type="hidden" name="<?=$k;?>" value="<?=$v;?>">
+        <input type="hidden" name="<?=esc_attr( $k );?>" value="<?=esc_attr( $v );?>">
 <?php endforeach; ?>
 <?php endif; ?>
-        <input type="search" name="s" value="" placeholder="<?=$post_type['label'];?>">
+        <input type="search" name="s" value="" placeholder="<?=esc_attr( $post_type['label'] );?>">
         <input type="submit" value="search">
     </div>
 </form>
