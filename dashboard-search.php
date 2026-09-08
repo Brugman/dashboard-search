@@ -14,16 +14,14 @@ function tbds_post_types()
 {
     $results = [];
 
-    // get post types
-    $post_types = get_post_types([
-        'public' => true,
-        'show_ui' => true,
-    ], 'objects');
-
-    // get admin url
     $admin_url = get_admin_url();
 
-    // save only the data we need
+    // add Post Types
+    $post_types = get_post_types([
+        'public'  => true,
+        'show_ui' => true,
+    ], 'objects' );
+
     foreach ( $post_types as $post_type )
     {
         $results[ $post_type->name ] = [
@@ -75,9 +73,7 @@ function tbds_post_types()
 }
 
 add_action( 'wp_dashboard_setup', function () {
-    // create widget
     wp_add_dashboard_widget( 'dashboard-search-boxes', 'Search', function ( $post, $callback_args ) {
-        // styles
 ?>
 <style>
 #dashboard-search-boxes.postbox .inside form + form { margin-top: 5px; }
@@ -85,7 +81,7 @@ add_action( 'wp_dashboard_setup', function () {
 #dashboard-search-boxes.postbox .inside input[type="submit"] { display: none; }
 </style>
 <?php
-        // get and loop post types
+
         foreach ( tbds_post_types() as $post_type )
         {
 ?>
@@ -93,12 +89,12 @@ add_action( 'wp_dashboard_setup', function () {
     <div class="form-group">
 <?php if ( $post_type['name'] ): ?>
         <input type="hidden" name="post_type" value="<?=$post_type['name'];?>">
-<?php endif; // $post_type['name'] ?>
+<?php endif; ?>
 <?php if ( isset( $post_type['other_gets'] ) ): ?>
 <?php foreach ( $post_type['other_gets'] as $k => $v ): ?>
         <input type="hidden" name="<?=$k;?>" value="<?=$v;?>">
-<?php endforeach; // $post_type['other_gets'] ?>
-<?php endif; // $post_type['other_gets'] ?>
+<?php endforeach; ?>
+<?php endif; ?>
         <input type="search" name="s" value="" placeholder="<?=$post_type['label'];?>">
         <input type="submit" value="search">
     </div>
