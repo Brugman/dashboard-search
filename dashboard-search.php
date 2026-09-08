@@ -28,6 +28,7 @@ function tbds_post_types()
             'name'       => $post_type->name,
             'label'      => $post_type->label,
             'action_url' => $admin_url.'edit.php?post_type='.$post_type->name,
+            'cap'        => $post_type->cap->edit_posts,
         ];
     }
 
@@ -38,6 +39,7 @@ function tbds_post_types()
             'name'       => false,
             'label'      => __( 'Forms' ),
             'action_url' => $admin_url.'admin.php',
+            'cap'        => 'gravityforms_edit_forms',
             'other_gets' => [
                 'page' => 'gf_edit_forms',
             ]
@@ -57,6 +59,7 @@ function tbds_post_types()
         'name'       => 'user',
         'label'      => __( 'Users' ),
         'action_url' => $admin_url.'users.php',
+        'cap'        => 'list_users',
     ];
 
     // add Network Users
@@ -66,6 +69,7 @@ function tbds_post_types()
             'name'       => 'network_user',
             'label'      => __( 'Network Users' ),
             'action_url' => network_admin_url().'users.php',
+            'cap'        => 'manage_network_users',
         ];
     }
 
@@ -84,6 +88,8 @@ add_action( 'wp_dashboard_setup', function () {
 
         foreach ( tbds_post_types() as $post_type )
         {
+            if ( ! current_user_can( $post_type['cap'] ) )
+                continue;
 ?>
 <form action="<?=$post_type['action_url'];?>" method="get" role="form">
     <div class="form-group">
