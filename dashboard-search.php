@@ -21,12 +21,15 @@ function tbds_post_types()
 
     // add Post Types
     $post_types = get_post_types([
-        'public'  => true,
         'show_ui' => true,
     ], 'objects' );
 
     foreach ( $post_types as $post_type )
     {
+        // respect types that were deliberately hidden from the admin menu
+        if ( $post_type->show_in_menu === false )
+            continue;
+
         $results[ $post_type->name ] = [
             'name'       => $post_type->name,
             'label'      => $post_type->label,
