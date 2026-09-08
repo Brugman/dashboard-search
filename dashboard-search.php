@@ -19,6 +19,25 @@ function tbds_search_targets()
 
     $admin_url = get_admin_url();
 
+    // group taxonomies by post type so they can be shown right after it
+    $taxonomies_by_post_type = [];
+
+    $taxonomies = get_taxonomies([
+        'show_ui' => true,
+    ], 'objects' );
+
+    foreach ( $taxonomies as $taxonomy )
+    {
+        // respect taxonomies that were deliberately hidden from the admin menu
+        if ( $taxonomy->show_in_menu === false )
+            continue;
+
+        foreach ( $taxonomy->object_type as $attached_post_type )
+        {
+            $taxonomies_by_post_type[ $attached_post_type ][] = $taxonomy;
+        }
+    }
+
     // add Post Types
     $post_types = get_post_types([
         'show_ui' => true,
@@ -36,43 +55,29 @@ function tbds_search_targets()
             'action_url' => $admin_url.'edit.php?post_type='.$post_type->name,
             'cap'        => $post_type->cap->edit_posts,
         ];
-    }
 
-    // add Taxonomies
-    $taxonomies = get_taxonomies([
-        'show_ui' => true,
-    ], 'objects' );
-
-    foreach ( $taxonomies as $taxonomy )
-    {
-        // respect taxonomies that were deliberately hidden from the admin menu
-        if ( $taxonomy->show_in_menu === false )
-            continue;
-
-        // add a search bar for every visible post type this taxonomy is attached to
-        foreach ( $taxonomy->object_type as $attached_post_type )
+        // add a search bar for each taxonomy attached to this post type
+        if ( isset( $taxonomies_by_post_type[ $post_type->name ] ) )
         {
-            if ( ! isset( $search_targets[ $attached_post_type ] ) )
-                continue;
+            foreach ( $taxonomies_by_post_type[ $post_type->name ] as $taxonomy )
+            {
+                $target_key = 'taxonomy_'.$taxonomy->name.'_'.$post_type->name;
 
-            $target_key = 'taxonomy_'.$taxonomy->name.'_'.$attached_post_type;
+                if ( isset( $search_targets[ $target_key ] ) )
+                    continue;
 
-            if ( isset( $search_targets[ $target_key ] ) )
-                continue;
-
-            $post_type_object = get_post_type_object( $attached_post_type );
-
-            $search_targets[ $target_key ] = [
-                'post_type'  => false,
-                // translators: 1: post type singular name, 2: taxonomy name.
-                'label'      => sprintf( __( '%1$s %2$s', 'tbds' ), $post_type_object->labels->singular_name, $taxonomy->label ),
-                'action_url' => $admin_url.'edit-tags.php',
-                'cap'        => $taxonomy->cap->manage_terms,
-                'extra_params' => [
-                    'taxonomy' => $taxonomy->name,
-                    'post_type' => $attached_post_type,
-                ],
-            ];
+                $search_targets[ $target_key ] = [
+                    'post_type'  => false,
+                    // translators: 1: post type singular name, 2: taxonomy name.
+                    'label'      => sprintf( __( '%1$s %2$s', 'tbds' ), $post_type->labels->singular_name, $taxonomy->label ),
+                    'action_url' => $admin_url.'edit-tags.php',
+                    'cap'        => $taxonomy->cap->manage_terms,
+                    'extra_params' => [
+                        'taxonomy' => $taxonomy->name,
+                        'post_type' => $post_type->name,
+                    ],
+                ];
+            }
         }
     }
 
