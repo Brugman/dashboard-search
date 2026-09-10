@@ -248,13 +248,7 @@ add_action( 'init', function () {
 
 add_action( 'wp_dashboard_setup', function () {
     wp_add_dashboard_widget( 'dashboard-search-boxes', esc_html__( 'Search', 'tbds' ), function () {
-?>
-<style>
-#dashboard-search-boxes.postbox .inside form + form { margin-top: 5px; }
-#dashboard-search-boxes.postbox .inside input { width: 100%; }
-#dashboard-search-boxes.postbox .inside input[type="submit"] { display: none; }
-</style>
-<?php
+        echo '<style>#dashboard-search-boxes.postbox .inside { display: grid; gap: 5px; }</style>';
 
         foreach ( tbds_search_targets() as $target_key => $target )
         {
@@ -270,16 +264,13 @@ add_action( 'wp_dashboard_setup', function () {
                 $hidden_params[ $param ] = $value;
 ?>
 <form action="<?=esc_url( $target['action_url'] );?>" method="get">
-    <div>
-        <label class="screen-reader-text" for="tbds-<?=esc_attr( $target_key );?>">
-            <?=esc_html( sprintf( __( 'Search %s', 'tbds' ), $target['label'] ) );?>
-        </label>
+    <label class="screen-reader-text" for="tbds-<?=esc_attr( $target_key );?>">
+        <?=esc_html( sprintf( __( 'Search %s', 'tbds' ), $target['label'] ) );?>
+    </label>
 <?php foreach ( $hidden_params as $param => $value ): ?>
-        <input type="hidden" name="<?=esc_attr( $param );?>" value="<?=esc_attr( $value );?>">
+    <input type="hidden" name="<?=esc_attr( $param );?>" value="<?=esc_attr( $value );?>">
 <?php endforeach; ?>
-        <input type="search" id="tbds-<?=esc_attr( $target_key );?>" name="s" value="" placeholder="<?=esc_attr( $target['label'] );?>">
-        <input type="submit" value="search">
-    </div>
+    <input type="search" id="tbds-<?=esc_attr( $target_key );?>" name="s" value="" placeholder="<?=esc_attr( $target['label'] );?>" style="width: 100%;">
 </form>
 <?php
         }
