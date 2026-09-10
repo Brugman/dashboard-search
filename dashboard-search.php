@@ -256,22 +256,28 @@ add_action( 'wp_dashboard_setup', function () {
 </style>
 <?php
 
-        foreach ( tbds_search_targets() as $target )
+        foreach ( tbds_search_targets() as $target_key => $target )
         {
             if ( !current_user_can( $target['cap'] ) )
                 continue;
+
+            $hidden_params = [];
+
+            if ( $target['post_type'] )
+                $hidden_params['post_type'] = $target['post_type'];
+
+            foreach ( $target['extra_params'] ?? [] as $param => $value )
+                $hidden_params[ $param ] = $value;
 ?>
 <form action="<?=esc_url( $target['action_url'] );?>" method="get">
     <div>
-<?php if ( $target['post_type'] ): ?>
-        <input type="hidden" name="post_type" value="<?=esc_attr( $target['post_type'] );?>">
-<?php endif; ?>
-<?php if ( isset( $target['extra_params'] ) ): ?>
-<?php foreach ( $target['extra_params'] as $param => $value ): ?>
+        <label class="screen-reader-text" for="tbds-<?=esc_attr( $target_key );?>">
+            <?=esc_html( sprintf( __( 'Search %s', 'tbds' ), $target['label'] ) );?>
+        </label>
+<?php foreach ( $hidden_params as $param => $value ): ?>
         <input type="hidden" name="<?=esc_attr( $param );?>" value="<?=esc_attr( $value );?>">
 <?php endforeach; ?>
-<?php endif; ?>
-        <input type="search" name="s" value="" placeholder="<?=esc_attr( $target['label'] );?>">
+        <input type="search" id="tbds-<?=esc_attr( $target_key );?>" name="s" value="" placeholder="<?=esc_attr( $target['label'] );?>">
         <input type="submit" value="search">
     </div>
 </form>
