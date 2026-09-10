@@ -120,6 +120,84 @@ function tbds_search_targets()
         ];
     }
 
+    // add WooCommerce
+    if ( class_exists( 'WooCommerce' ) )
+    {
+        // use our own labels instead of the generic post type boxes,
+        // which would otherwise be scattered across the alphabetical cluster
+        unset( $search_targets['product'], $search_targets['shop_order'], $search_targets['shop_coupon'] );
+
+        $search_targets['wc_product'] = [
+            'post_type'  => 'product',
+            'label'      => __( 'Products', 'tbds' ),
+            'action_url' => $admin_url.'edit.php',
+            'cap'        => 'edit_products',
+        ];
+
+        // orders live on a custom admin screen when HPOS is enabled
+        $hpos_enabled = class_exists( '\\Automattic\\WooCommerce\\Utilities\\OrderUtil' )
+            && call_user_func( [ '\\Automattic\\WooCommerce\\Utilities\\OrderUtil', 'custom_orders_table_usage_is_enabled' ] );
+
+        if ( $hpos_enabled )
+        {
+            $search_targets['wc_order'] = [
+                'post_type'    => false,
+                'label'        => __( 'Orders', 'tbds' ),
+                'action_url'   => $admin_url.'admin.php',
+                'cap'          => 'edit_shop_orders',
+                'extra_params' => [
+                    'page' => 'wc-orders',
+                ],
+            ];
+        }
+        else
+        {
+            $search_targets['wc_order'] = [
+                'post_type'  => 'shop_order',
+                'label'      => __( 'Orders', 'tbds' ),
+                'action_url' => $admin_url.'edit.php',
+                'cap'        => 'edit_shop_orders',
+            ];
+        }
+
+        // only show coupons if the store actually uses them
+        $coupon_counts = wp_count_posts( 'shop_coupon' );
+        $has_coupons = $coupon_counts && array_sum( (array) $coupon_counts ) > 0;
+
+        if ( $has_coupons )
+        {
+            $search_targets['wc_coupon'] = [
+                'post_type'  => 'shop_coupon',
+                'label'      => __( 'Coupons', 'tbds' ),
+                'action_url' => $admin_url.'edit.php',
+                'cap'        => 'edit_shop_coupons',
+            ];
+        }
+
+        // place product taxonomies (categories, tags, ...) directly after products
+        $product_taxonomies = [];
+
+        foreach ( $search_targets as $target_key => $target )
+        {
+            if ( strpos( $target_key, 'taxonomy_' ) === 0 && $target['extra_params']['post_type'] === 'product' )
+            {
+                $product_taxonomies[ $target_key ] = $target;
+                unset( $search_targets[ $target_key ] );
+            }
+        }
+
+        if ( $product_taxonomies )
+        {
+            $wc_product_pos = array_search( 'wc_product', array_keys( $search_targets ), true ) + 1;
+
+            $search_targets = array_merge(
+                array_slice( $search_targets, 0, $wc_product_pos, true ),
+                $product_taxonomies,
+                array_slice( $search_targets, $wc_product_pos, null, true )
+            );
+        }
+    }
+
     // add Plugins
     if ( !isset( $search_targets['plugins'] ) )
     {
