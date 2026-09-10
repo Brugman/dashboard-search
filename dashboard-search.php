@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: Dashboard Search
  * Description: Dashboard Search.
@@ -41,6 +40,11 @@ function tbds_search_targets()
         'show_ui' => true,
     ], 'objects' );
 
+    // sort alphabetically by label
+    uasort( $post_types, function ( $a, $b ) {
+        return strcasecmp( $a->labels->name, $b->labels->name );
+    });
+
     foreach ( $post_types as $post_type )
     {
         // respect types that were deliberately hidden from the admin menu
@@ -79,21 +83,7 @@ function tbds_search_targets()
         }
     }
 
-    // add Gravity Forms
-    if ( class_exists( 'GFCommon' ) && !isset( $search_targets['gform'] ) )
-    {
-        $search_targets['gform'] = [
-            'post_type'    => false,
-            'label'        => __( 'Forms', 'tbds' ),
-            'action_url'   => $admin_url.'admin.php',
-            'cap'          => 'gravityforms_edit_forms',
-            'extra_params' => [
-                'page' => 'gf_edit_forms',
-            ]
-        ];
-    }
-
-    // move attachment to the end
+    // move attachment to the end of the content cluster
     if ( isset( $search_targets['attachment'] ) )
     {
         $attachment = $search_targets['attachment'];
@@ -113,6 +103,20 @@ function tbds_search_targets()
             'label'      => __( 'Comments', 'tbds' ),
             'action_url' => $admin_url.'edit-comments.php',
             'cap'        => 'edit_posts',
+        ];
+    }
+
+    // add Gravity Forms
+    if ( class_exists( 'GFCommon' ) && !isset( $search_targets['gform'] ) )
+    {
+        $search_targets['gform'] = [
+            'post_type'    => false,
+            'label'        => __( 'Forms', 'tbds' ),
+            'action_url'   => $admin_url.'admin.php',
+            'cap'          => 'gravityforms_edit_forms',
+            'extra_params' => [
+                'page' => 'gf_edit_forms',
+            ]
         ];
     }
 
